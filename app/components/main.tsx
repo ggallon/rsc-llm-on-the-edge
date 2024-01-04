@@ -10,7 +10,7 @@ export function Main({ bot, country, city, children }: MainProps) {
     <main>
       <h1 className="title">
         {bot ? (
-          <span>You won$apos;t believe you're on Earth...</span>
+          <span>You won$apos;t believe you&apos;re on Earth...</span>
         ) : (
           <>
             <span>What to do in </span>
