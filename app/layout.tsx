@@ -36,10 +36,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>
-        {/* <NavigationSwitcher /> */}
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }
