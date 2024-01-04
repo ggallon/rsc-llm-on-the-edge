@@ -1,4 +1,4 @@
-export const urlHost = (): string => {
+export const urlHost = () => {
   let url: string = "none";
 
   switch (process.env.NEXT_PUBLIC_VERCEL_ENV) {
