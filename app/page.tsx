@@ -1,12 +1,16 @@
-import { headers } from "next/headers";
-import { Footer } from "./components/footer";
-import { Region } from "./components/region";
-import { parseVercelId } from "./parse-vercel-id";
-import { OpenAIStream } from "ai";
-import OpenAI from "openai";
 import { Suspense } from "react";
+import { OpenAIStream } from "ai";
 import { Tokens } from "ai/react";
+import { headers } from "next/headers";
+import OpenAI from "openai";
 import { kv } from "@vercel/kv";
+
+import { Footer } from "./components/footer";
+import { Main } from "./components/main";
+import { Meta } from "./components/meta";
+
+import { parseVercelId } from "./parse-vercel-id";
+import { detectBot } from "./lib/bot";
 
 export const runtime = "edge";
 
@@ -26,33 +30,22 @@ export default async function Page() {
     headersList.get("X-Vercel-Id"),
   );
 
-  if (headersList.get("user-agent")?.includes("Twitterbot")) {
-    return <></>;
-  }
+  const isBot = detectBot(headersList);
 
   return (
     <>
-      <main>
-        <h1 className="title">
-          <span>What to do in </span>
-          {city}?
-        </h1>
-        <pre className="tokens">
-          <Suspense fallback={null}>
-            <Wrapper city={city} timezone={timezone} />
-          </Suspense>
-        </pre>
-      </main>
-      <div className="meta">
-        <div className="info">
-          <span>Proxy Region</span>
-          <Region region={proxyRegion} />
-        </div>
-        <div className="info">
-          <span>Compute Region</span>
-          <Region region={computeRegion} />
-        </div>
-      </div>
+      <Main city={isBot ? "the Earth" : city}>
+        {isBot ? (
+          <p>The Earth was made to travel.</p>
+        ) : (
+          <pre className="tokens">
+            <Suspense fallback={null}>
+              <Wrapper city={city} timezone={timezone} />
+            </Suspense>
+          </pre>
+        )}
+      </Main>
+      <Meta proxy={proxyRegion} compute={computeRegion} />
       <Footer />
     </>
   );
