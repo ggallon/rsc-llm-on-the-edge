@@ -3,6 +3,8 @@ export const detectBot = (headersList: Headers) => {
   if (ua) {
     /* Note:
      * - bot is for most bots & crawlers
+     * - Twitterbot is for Twitter
+     * - Vercelbot is for Vercel scranshoot
      * - ChatGPT is for ChatGPT
      * - facebookexternalhit is for Facebook crawler
      * - WhatsApp is for WhatsApp crawler
