@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { OpenAIStream } from "ai";
 import { Tokens } from "ai/react";
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import OpenAI from "openai";
+import { Ratelimit } from "@upstash/ratelimit";
 import { kv } from "@vercel/kv";
 
 import { Footer } from "./components/footer";
@@ -10,18 +12,40 @@ import { Main } from "./components/main";
 import { Meta } from "./components/meta";
 
 import { detectBot } from "./lib/bot";
+import { getIP } from "./lib/ip";
 import { getCacheKey } from "./lib/key";
 import { getGeo } from "./lib/geo";
 import { parseVercelId } from "./lib/parse-vercel-id";
 
 export const runtime = "edge";
 
+const cache = new Map();
+
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const ratelimit = new Ratelimit({
+  redis: kv,
+  // rate limit to 5 requests per 10 seconds
+  limiter: Ratelimit.slidingWindow(5, "10s"),
+  ephemeralCache: cache,
+});
+
 export default async function Page() {
   const headersList = headers();
+  const ip = getIP(headersList);
+
+  const { success, limit, reset, remaining } = await ratelimit.limit(
+    `rllm:ratelimit:${ip}`,
+  );
+
+  if (!success) {
+    redirect(
+      `/ratelimit?limit=${limit.toString()}&reset=${reset.toString()}&remaining=${remaining.toString()}`,
+    );
+  }
+
   const { city, country } = getGeo(headersList);
   const timezone = headersList.get("X-Vercel-IP-Timezone") || "Europe/Paris";
   const { proxyRegion, computeRegion } = parseVercelId(
