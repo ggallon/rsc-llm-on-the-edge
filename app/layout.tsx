@@ -1,6 +1,14 @@
+import type { Viewport, Metadata } from "next";
+
 import "./globals.css";
 
-export const metadata = {
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#000000" },
+    { media: "(prefers-color-scheme: dark)", color: "#ffffff" },
+  ],
+};
+export const metadata: Metadata = {
   title: "React Server Component LLM streaming on the Edge",
   description: "Vercel AI SDK on the Edge",
   twitter: {
@@ -15,10 +23,6 @@ export const metadata = {
     description: "React Server Component streaming an LLM response on the Edge",
     url: "https://rsc-llm-on-the-edge.vercel.app/",
   },
-  themeColor: [
-    { media: "(prefers-color-scheme: dark)", color: "#000000" },
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-  ],
 };
 
 export default function RootLayout({
