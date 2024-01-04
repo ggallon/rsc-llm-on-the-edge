@@ -8,11 +8,9 @@ export function LimitStatus() {
   const remaining = searchParams.get("remaining");
   const reset = searchParams.get("reset");
 
-  // URL -> `/dashboard?search=my-project`
-  // `search` -> 'my-project'
   return (
     <ul>
-      <li>"X-RateLimit-Limit: {limit}</li>
+      <li>X-RateLimit-Limit: {limit}</li>
       <li>X-RateLimit-Remaining: {remaining}</li>
       <li>X-RateLimit-Reset: {reset}</li>
     </ul>
