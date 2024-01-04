@@ -35,7 +35,6 @@ const ratelimit = new Ratelimit({
 export default async function Page() {
   const headersList = headers();
   const ip = getIP(headersList);
-
   const { success, limit, reset, remaining } = await ratelimit.limit(
     `rllm:ratelimit:${ip}`,
   );
@@ -45,7 +44,7 @@ export default async function Page() {
   }
 
   const rateinfo = { reset, remaining, limit };
-  const { city, country } = getGeo(headersList);
+  const { city, country, isoCountry } = getGeo(headersList);
   const timezone = headersList.get("X-Vercel-IP-Timezone") || "Europe/Paris";
   const { proxyRegion, computeRegion } = parseVercelId(
     headersList.get("X-Vercel-Id"),
@@ -61,7 +60,12 @@ export default async function Page() {
         ) : (
           <pre className="tokens">
             <Suspense fallback={null}>
-              <Wrapper country={country} city={city} timezone={timezone} />
+              <Wrapper
+                isoCountry={isoCountry}
+                country={country}
+                city={city}
+                timezone={timezone}
+              />
             </Suspense>
           </pre>
         )}
@@ -74,15 +78,17 @@ export default async function Page() {
 
 // We add a wrapper component to avoid suspending the entire page while the OpenAI request is being made
 async function Wrapper({
+  isoCountry,
   country,
   city,
   timezone,
 }: {
+  isoCountry: string;
   country: string;
   city: string;
   timezone: string;
 }) {
-  const key = getCacheKey({ country, city, timezone });
+  const key = getCacheKey({ isoCountry, city, timezone });
   // See https://sdk.vercel.ai/docs/concepts/caching
   const cached = (await kv.get(key)) as string | undefined;
 
