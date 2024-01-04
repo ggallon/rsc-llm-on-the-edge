@@ -27,8 +27,8 @@ const openai = new OpenAI({
 
 const ratelimit = new Ratelimit({
   redis: kv,
-  // rate limit to 5 requests per 10 seconds
-  limiter: Ratelimit.slidingWindow(5, "10s"),
+  // rate limit to 3 requests per 10 seconds
+  limiter: Ratelimit.slidingWindow(3, "10s"),
   ephemeralCache: cache,
 });
 
@@ -41,11 +41,10 @@ export default async function Page() {
   );
 
   if (!success) {
-    redirect(
-      `/ratelimit?limit=${limit.toString()}&reset=${reset.toString()}&remaining=${remaining.toString()}`,
-    );
+    redirect("/ratelimit");
   }
 
+  const rateinfo = { reset, remaining, limit };
   const { city, country } = getGeo(headersList);
   const timezone = headersList.get("X-Vercel-IP-Timezone") || "Europe/Paris";
   const { proxyRegion, computeRegion } = parseVercelId(
@@ -67,7 +66,7 @@ export default async function Page() {
           </pre>
         )}
       </Main>
-      <Meta proxy={proxyRegion} compute={computeRegion} />
+      <Meta proxy={proxyRegion} compute={computeRegion} rateinfo={rateinfo} />
       <Footer />
     </>
   );

@@ -1,18 +1,18 @@
-"use client";
+import { resetTime } from "../lib/date";
 
-import { useSearchParams } from "next/navigation";
+export interface RateInfo {
+  reset: number;
+  remaining: number;
+  limit: number;
+}
 
-export function LimitStatus() {
-  const searchParams = useSearchParams();
-  const limit = searchParams.get("limit");
-  const remaining = searchParams.get("remaining");
-  const reset = searchParams.get("reset");
-
+export function LimitStatus({ rateinfo }: { rateinfo: RateInfo }) {
   return (
-    <ul>
-      <li>X-RateLimit-Limit: {limit}</li>
-      <li>X-RateLimit-Remaining: {remaining}</li>
-      <li>X-RateLimit-Reset: {reset}</li>
-    </ul>
+    <span className="region">
+      <strong>
+        {rateinfo.remaining}/{rateinfo.limit}
+      </strong>{" "}
+      <span className="region-code">({resetTime(rateinfo.reset)})</span>
+    </span>
   );
 }
