@@ -59,7 +59,7 @@ async function Wrapper({
   city: string;
   timezone: string;
 }) {
-  const key = await getCacheKey({ country, city, timezone });
+  const key = getCacheKey({ country, city, timezone });
   // See https://sdk.vercel.ai/docs/concepts/caching
   const cached = (await kv.get(key)) as string | undefined;
 
