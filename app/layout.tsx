@@ -15,13 +15,13 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Vercel AI SDK on the Edge",
     description: "React Server Component streaming an LLM response on the Edge",
-    creator: "@nextjs",
+    creator: "@proactice",
   },
   openGraph: {
     type: "website",
     title: "Vercel AI SDK on the Edge",
     description: "React Server Component streaming an LLM response on the Edge",
-    url: "https://rsc-llm-on-the-edge.vercel.app/",
+    url: "https://rsc-llm.vercel.app/",
   },
 };
 

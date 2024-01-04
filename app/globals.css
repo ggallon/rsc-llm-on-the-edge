@@ -89,7 +89,9 @@ body a {
 }
 
 body a:focus-visible {
-  box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accents-4);
+  box-shadow:
+    0 0 0 2px var(--bg),
+    0 0 0 4px var(--accents-4);
   outline: 0;
   text-decoration: none;
 }
@@ -253,8 +255,10 @@ footer .source {
   text-decoration: none;
 }
 
-.vercel {
+.proactice,
+.proactice svg {
   height: 24px;
+  width: 24px;
 }
 
 /* nav */
@@ -281,15 +285,19 @@ nav {
   .gradient[data-theme="dark"] {
     display: block;
   }
+
   .gradient[data-theme="light"] {
     display: none;
   }
+
   .details p:nth-of-type(2) {
     color: var(--accents-5);
   }
+
   .illustration[data-theme="dark"] {
     display: block;
   }
+
   .illustration[data-theme="light"] {
     display: none;
   }
@@ -341,9 +349,9 @@ nav {
     height: 14px;
   }
 
-  .vercel,
-  .vercel svg {
+  .proactice,
+  .proactice svg {
     height: 18px;
+    width: 18px;
   }
 }
-
