@@ -12,7 +12,7 @@ import { Meta } from "./components/meta";
 import { detectBot } from "./lib/bot";
 import { getCacheKey } from "./lib/key";
 import { getGeo } from "./lib/geo";
-import { parseVercelId } from "./parse-vercel-id";
+import { parseVercelId } from "./lib/parse-vercel-id";
 
 export const runtime = "edge";
 
