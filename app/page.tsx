@@ -9,8 +9,10 @@ import { Footer } from "./components/footer";
 import { Main } from "./components/main";
 import { Meta } from "./components/meta";
 
-import { parseVercelId } from "./parse-vercel-id";
 import { detectBot } from "./lib/bot";
+import { getCacheKey } from "./lib/key";
+import { getGeo } from "./lib/geo";
+import { parseVercelId } from "./parse-vercel-id";
 
 export const runtime = "edge";
 
@@ -20,12 +22,8 @@ const openai = new OpenAI({
 
 export default async function Page() {
   const headersList = headers();
-  const city = decodeURIComponent(
-    headersList.get("X-Vercel-IP-City") || "Bordeaux",
-  );
-
+  const { localised, city, country } = getGeo(headersList);
   const timezone = headersList.get("X-Vercel-IP-Timezone") || "Europe/Paris";
-
   const { proxyRegion, computeRegion } = parseVercelId(
     headersList.get("X-Vercel-Id"),
   );
@@ -34,13 +32,13 @@ export default async function Page() {
 
   return (
     <>
-      <Main city={isBot ? "the Earth" : city}>
+      <Main bot={isBot} country={country} city={city}>
         {isBot ? (
           <p>The Earth was made to travel.</p>
         ) : (
           <pre className="tokens">
             <Suspense fallback={null}>
-              <Wrapper city={city} timezone={timezone} />
+              <Wrapper country={country} city={city} timezone={timezone} />
             </Suspense>
           </pre>
         )}
@@ -52,10 +50,18 @@ export default async function Page() {
 }
 
 // We add a wrapper component to avoid suspending the entire page while the OpenAI request is being made
-async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
-  const binome = `rllm:${city}-${timezone.replace("/", "-")}`;
+async function Wrapper({
+  country,
+  city,
+  timezone,
+}: {
+  country: string;
+  city: string;
+  timezone: string;
+}) {
+  const key = await getCacheKey({ country, city, timezone });
   // See https://sdk.vercel.ai/docs/concepts/caching
-  const cached = (await kv.get(binome)) as string | undefined;
+  const cached = (await kv.get(key)) as string | undefined;
 
   if (cached) {
     const chunks = cached.split(" ");
@@ -88,7 +94,9 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
         content:
           "Act like as if you are a travel expert. Provide a list of 5 things to do in " +
           city +
-          " in the " +
+          ", " +
+          country +
+          " with the " +
           // The timezone helps the AI decide the correct state / location
           timezone +
           " timezone and start with 'here's a...'. Do NOT mention the timezone in your response.",
@@ -99,8 +107,8 @@ async function Wrapper({ city, timezone }: { city: string; timezone: string }) {
   // Convert the response into a friendly text-stream
   const stream = OpenAIStream(response, {
     async onCompletion(completion) {
-      await kv.set(binome, completion);
-      await kv.expire(binome, 60 * 10);
+      await kv.set(key, completion);
+      await kv.expire(key, 60 * 10);
     },
   });
 
