@@ -22,7 +22,7 @@ const openai = new OpenAI({
 
 export default async function Page() {
   const headersList = headers();
-  const { localised, city, country } = getGeo(headersList);
+  const { city, country } = getGeo(headersList);
   const timezone = headersList.get("X-Vercel-IP-Timezone") || "Europe/Paris";
   const { proxyRegion, computeRegion } = parseVercelId(
     headersList.get("X-Vercel-Id"),
