@@ -1,5 +1,7 @@
 import type { Viewport, Metadata } from "next";
 
+import { urlHost } from "./lib/url";
+
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -8,7 +10,9 @@ export const viewport: Viewport = {
     { media: "(prefers-color-scheme: dark)", color: "#ffffff" },
   ],
 };
+
 export const metadata: Metadata = {
+  metadataBase: new URL(urlHost()),
   title: "React Server Component LLM streaming on the Edge",
   description: "Vercel AI SDK on the Edge",
   twitter: {
@@ -21,7 +25,7 @@ export const metadata: Metadata = {
     type: "website",
     title: "Vercel AI SDK on the Edge",
     description: "React Server Component streaming an LLM response on the Edge",
-    url: "https://rsc-llm.vercel.app/",
+    url: new URL(urlHost()),
   },
 };
 
